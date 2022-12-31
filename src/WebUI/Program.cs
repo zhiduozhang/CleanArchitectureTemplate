@@ -7,6 +7,25 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebUIServices();
 
+var CorsOrigins = "_CorsOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CorsOrigins,
+                      policy =>
+                      {
+                          policy.
+                          SetIsOriginAllowedToAllowWildcardSubdomains()
+                          .WithOrigins("https://localhost:5173",
+                                       "http://localhost:5173",
+                                      "localhost:5173")
+                            .AllowAnyMethod()
+                            .AllowCredentials()
+                            .AllowAnyHeader()
+                            .Build();
+                      });
+});
+
 var app = builder.Build();
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); // TODO: Do this properly. https://stackoverflow.com/questions/69961449/net6-and-datetime-problem-cannot-write-datetime-with-kind-utc-to-postgresql-ty
@@ -46,6 +65,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseIdentityServer();
 app.UseAuthorization();
+
+app.UseCors(CorsOrigins);
 
 app.MapControllerRoute(
     name: "default",
