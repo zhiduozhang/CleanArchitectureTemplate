@@ -37,7 +37,21 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
+<Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+    <Message Importance="High" Text="$(NSwagExe_Net70) run nswag.json /variables:Configuration=$(Configuration)" />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="DOTNET_ENVIRONMENT=Development;JWT_SECRET=Test" Command="$(NSwagExe_Net70) run nswag.json /variables:Configuration=$(Configuration)" />
+    <Delete Files="$(ProjectDir)\obj\$(MSBuildProjectFile).NSwag.targets" />
+    <!-- Runs NSwag, including code-gen for webclient -->
+</Target>
+
+<Target Name="NSwagExternalCodeGen" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
+    <Message Importance="High" Text="$(NSwagExe_Net70) run nswag_external_code_gen.json /variables:Configuration=$(Configuration)" />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="DOTNET_ENVIRONMENT=Development;JWT_SECRET=Test" Command="$(NSwagExe_Net70) run nswag_external_code_gen.json /variables:Configuration=$(Configuration)" />
+    <Delete Files="$(ProjectDir)\obj\$(MSBuildProjectFile).NSwag.targets" />
+    <!-- Runs the NSWag but configured to generate code for frontend -->
+</Target>
+
+    <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
