@@ -1,4 +1,13 @@
 using CleanArchitecture.Infrastructure.Persistence;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
+
+Log.Logger = new LoggerConfiguration()
+  .WriteTo.Console()
+  .CreateBootstrapLogger();
+
+Log.Information("Starting up");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +15,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebUIServices();
+
+builder.Host.UseSerilog((ctx, lc) =>
+{
+    lc.MinimumLevel.Debug()
+      .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+      .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+      .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
+      .MinimumLevel.Override("System", LogEventLevel.Warning)
+      .WriteTo.Console(
+        outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
+        theme: AnsiConsoleTheme.Code)
+      .Enrich.FromLogContext();
+});
 
 var CorsOrigins = "_CorsOrigins";
 
