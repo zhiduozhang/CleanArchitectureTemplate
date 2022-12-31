@@ -50,6 +50,9 @@ public class UpdateTodoItemTests : BaseTestFixture
         item.LastModifiedBy.Should().NotBeNull();
         item.LastModifiedBy.Should().Be(userId);
         item.LastModified.Should().NotBeNull();
-        item.LastModified.Should().BeCloseTo(DateTime.Now, TimeSpan.FromMilliseconds(10000));
+        if (item.LastModified.HasValue)
+        {
+            item.LastModified.Value.ToUniversalTime().Should().BeCloseTo(DateTime.Now, TimeSpan.FromMilliseconds(10000));
+        }
     }
 }

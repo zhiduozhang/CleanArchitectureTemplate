@@ -68,6 +68,9 @@ public class UpdateTodoListTests : BaseTestFixture
         list.LastModifiedBy.Should().NotBeNull();
         list.LastModifiedBy.Should().Be(userId);
         list.LastModified.Should().NotBeNull();
-        list.LastModified.Should().BeCloseTo(DateTime.Now, TimeSpan.FromMilliseconds(10000));
+        if (list.LastModified.HasValue)
+        {
+            list.LastModified.Value.ToUniversalTime().Should().BeCloseTo(DateTime.Now, TimeSpan.FromMilliseconds(10000));
+        }
     }
 }

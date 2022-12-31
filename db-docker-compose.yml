@@ -1,0 +1,17 @@
+﻿version: '3.9'
+
+services:
+  postgres:
+    container_name: clean-architecture-api-postgres-14
+    image: postgres:14-alpine
+    ports:
+      - 5433:5433
+    #volumes:
+    #  - ~/dockerVolumes/postgres:/var/lib/postgresql/data
+    #  - ./dataMigration:/dataMigration
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      ## leaving postgres so we can delete/create the database whenever we want
+      - POSTGRES_DB=database
+    command: -p 5433

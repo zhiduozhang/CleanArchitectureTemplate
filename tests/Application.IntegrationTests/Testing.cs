@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using NUnit.Framework;
 using Respawn;
 
@@ -29,7 +30,8 @@ public partial class Testing
 
         _checkpoint = new Checkpoint
         {
-            TablesToIgnore = new[] { "__EFMigrationsHistory" }
+            TablesToIgnore = new[] { "__EFMigrationsHistory" },
+            DbAdapter = DbAdapter.Postgres,
         };
     }
 
@@ -93,9 +95,14 @@ public partial class Testing
 
     public static async Task ResetState()
     {
-        await _checkpoint.Reset(_configuration.GetConnectionString("DefaultConnection"));
+        using (var conn = new NpgsqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+        {
+            await conn.OpenAsync();
 
-        _currentUserId = null;
+            await _checkpoint.Reset(conn);
+
+            _currentUserId = null;
+        }
     }
 
     public static async Task<TEntity?> FindAsync<TEntity>(params object[] keyValues)

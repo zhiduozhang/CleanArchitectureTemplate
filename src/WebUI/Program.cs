@@ -9,6 +9,8 @@ builder.Services.AddWebUIServices();
 
 var app = builder.Build();
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); // TODO: Do this properly. https://stackoverflow.com/questions/69961449/net6-and-datetime-problem-cannot-write-datetime-with-kind-utc-to-postgresql-ty
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

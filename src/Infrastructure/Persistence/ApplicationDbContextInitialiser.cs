@@ -25,7 +25,7 @@ public class ApplicationDbContextInitialiser
     {
         try
         {
-            if (_context.Database.IsSqlServer())
+            if (_context.Database.IsNpgsql())
             {
                 await _context.Database.MigrateAsync();
             }
@@ -68,7 +68,7 @@ public class ApplicationDbContextInitialiser
             await _userManager.CreateAsync(administrator, "Administrator1!");
             if (!string.IsNullOrWhiteSpace(administratorRole.Name))
             {
-                await _userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
             }
         }
 
