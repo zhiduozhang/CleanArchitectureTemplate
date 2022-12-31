@@ -32,7 +32,12 @@ public static class ConfigureServices
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddIdentityServer()
-            .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+            .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+            {
+                options.Clients.AddRange(IdentityConfig.Clients);
+                options.ApiResources.AddRange(IdentityConfig.ApiResources);
+                options.ApiScopes.AddRange(IdentityConfig.ApiScopes);
+            });
 
         services.AddTransient<IDateTime, DateTimeService>();
         services.AddTransient<IIdentityService, IdentityService>();
