@@ -35,6 +35,7 @@ public static class ConfigureServices
             {
                 // set path where to store keys
                 options.KeyManagement.KeyPath = "/home/shared/keys";
+                options.KeyManagement.Enabled = true;
             })
             .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
             {
