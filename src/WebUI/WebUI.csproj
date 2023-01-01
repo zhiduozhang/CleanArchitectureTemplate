@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
@@ -21,15 +21,15 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.4" />
-    <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="7.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.5" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.18.2" />
     <PackageReference Include="NSwag.MSBuild" Version="13.18.2">
         <PrivateAssets>all</PrivateAssets>
@@ -39,15 +39,15 @@
   </ItemGroup>
 
 <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
-    <Message Importance="High" Text="$(NSwagExe_Net70) run nswag.json /variables:Configuration=$(Configuration)" />
-    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="DOTNET_ENVIRONMENT=Development;JWT_SECRET=Test" Command="$(NSwagExe_Net70) run nswag.json /variables:Configuration=$(Configuration)" />
+    <Message Importance="High" Text="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="DOTNET_ENVIRONMENT=Development;JWT_SECRET=Test" Command="$(NSwagExe_Net60) run nswag.json /variables:Configuration=$(Configuration)" />
     <Delete Files="$(ProjectDir)\obj\$(MSBuildProjectFile).NSwag.targets" />
     <!-- Runs NSwag, including code-gen for webclient -->
 </Target>
 
 <Target Name="NSwagExternalCodeGen" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
-    <Message Importance="High" Text="$(NSwagExe_Net70) run nswag_external_code_gen.json /variables:Configuration=$(Configuration)" />
-    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="DOTNET_ENVIRONMENT=Development;JWT_SECRET=Test" Command="$(NSwagExe_Net70) run nswag_external_code_gen.json /variables:Configuration=$(Configuration)" />
+    <Message Importance="High" Text="$(NSwagExe_Net60) run nswag_external_code_gen.json /variables:Configuration=$(Configuration)" />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="DOTNET_ENVIRONMENT=Development;JWT_SECRET=Test" Command="$(NSwagExe_Net60) run nswag_external_code_gen.json /variables:Configuration=$(Configuration)" />
     <Delete Files="$(ProjectDir)\obj\$(MSBuildProjectFile).NSwag.targets" />
     <!-- Runs the NSWag but configured to generate code for frontend -->
 </Target>
