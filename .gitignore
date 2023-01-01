@@ -23,6 +23,8 @@ bin/
 Bin/
 obj/
 Obj/
+website/
+website.zip
 
 # Visual Studio 2015 cache/options directory
 .vs/

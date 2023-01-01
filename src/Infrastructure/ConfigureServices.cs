@@ -31,12 +31,7 @@ public static class ConfigureServices
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        services.AddIdentityServer(options =>
-            {
-                // set path where to store keys
-                options.KeyManagement.KeyPath = "/home/shared/keys";
-                options.KeyManagement.Enabled = true;
-            })
+        services.AddIdentityServer()
             .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
             {
                 options.Clients.AddRange(IdentityConfig.Clients);
