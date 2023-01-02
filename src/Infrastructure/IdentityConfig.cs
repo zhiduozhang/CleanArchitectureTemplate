@@ -50,8 +50,6 @@ public static class IdentityConfig
 
                 // List of URIs we can redirect back to.
                 RedirectUris = { "http://localhost:5173/" },
-                //FrontChannelLogoutUri = "https://localhost:44447/signout-oidc",
-                //PostLogoutRedirectUris = { "https://localhost:44447/signout-callback-oidc" },
 
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "general_api", "WebUIAPI"},
