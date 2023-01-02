@@ -49,7 +49,7 @@ jobs:
       - name: Publish
         run: dotnet publish src/WebUI/WebUI.csproj --configuration Release --output website
       - name: Create ZIP deployment package
-        run: zip -r deploy_package.zip /home/runner/work/CleanArchitectureTemplate/CleanArchitectureTemplate/website/**
+        run: cd /home/runner/work/CleanArchitectureTemplate/CleanArchitectureTemplate/website/ && zip -r ~/deploy_package.zip .
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -57,7 +57,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
       - name: Upload package to S3 bucket
-        run: aws s3 cp deploy_package.zip s3://dotnet-cleanarchitecture-eb-artefacts/${{ github.sha }}.zip
+        run: aws s3 cp ~/deploy_package.zip s3://dotnet-cleanarchitecture-eb-artefacts/${{ github.sha }}.zip
   deploy-staging:
     needs: build
     runs-on: ubuntu-latest
