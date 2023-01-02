@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, ConfigurationManager configuration)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
@@ -32,7 +32,6 @@ public static class ConfigureServices
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddIdentityServer()
-            .LoadSigningCredentialFrom(configuration.GetValue<string>("certificates:signing"))
             .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
             {
                 options.Clients.AddRange(IdentityConfig.Clients);
