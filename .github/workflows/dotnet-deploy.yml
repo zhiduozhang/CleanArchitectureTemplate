@@ -4,12 +4,12 @@ on:
     branches: [ main ]
 
 env:
-  as-name: "as-cast"
-  rg-name: "rg-cast"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     services:
@@ -29,9 +29,9 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.x'
           include-prerelease: true
@@ -48,66 +48,38 @@ jobs:
             Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=postgres;
       - name: Publish
         run: dotnet publish src/WebUI/WebUI.csproj --configuration Release --output website
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.2
+      - name: Create ZIP deployment package
+        run: zip -r deploy_package.zip /home/runner/work/CleanArchitectureTemplate/CleanArchitectureTemplate/website/**
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
-          name: website
-          path: /home/runner/work/CleanArchitectureTemplate/CleanArchitectureTemplate/website/**
-          if-no-files-found: error
-
+          aws-access-key-id: ${{ AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ AWS_DEFAULT_REGION }}
+      - name: Upload package to S3 bucket
+        run: aws s3 cp deploy_package.zip s3://dotnet-cleanarchitecture-eb-artefacts/${{ github.sha }}.zip
   deploy-staging:
     needs: build
-    
     runs-on: ubuntu-latest
 
     environment:
       name: staging
       url: ${{ steps.deploywebapp.outputs.webapp-url }}
-    
+      
     steps:
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v2.0.8
-      with:
-        name: website
-        path: website
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ AWS_DEFAULT_REGION }}
+      - name: Create new ElasticBeanstalk Application Version
+        run: |
+          aws elasticbeanstalk create-application-version \
+          --application-name cleanarchitecture-template \
+          --source-bundle S3Bucket="dotnet-cleanarchitecture-eb-artefacts",S3Key="${{ github.sha }}.zip" \
+          --version-label "ver-${{ github.sha }}" \
+          --description "commit-sha-${{ github.sha }}"
 
-    - name: Login via Azure CLI
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
-    - name: Deploy web app
-      id: deploywebapp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.as-name }}
-        slot-name: staging
-        package: website
-
-    - name: Logout via Azure CLI
-      run: az logout
-
-  deploy-prod:
-    needs: deploy-staging
-
-    runs-on: ubuntu-latest
-
-    environment:
-      name: prod
-      url: ${{ steps.slot_swap.outputs.url }}
-
-    steps:
-    - name: Login via Azure CLI
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
-    - name: Swap Staging and Prod
-      id: slot_swap
-      run: |
-        az webapp deployment slot swap -g ${{ env.rg-name }} -n ${{ env.as-name }} -s staging
-        url=$(az webapp show -g ${{ env.rg-name }} -n ${{ env.as-name }} --query "defaultHostName" -o tsv)
-        echo "::set-output name=url::https://$url"
-
-    - name: Logout via Azure CLI
-      run: az logout
+      - name: Deploy new ElasticBeanstalk Application Version
+        run: aws elasticbeanstalk update-environment --environment-name  cleanarchitecture-staging --version-label "ver-${{ github.sha }}"
