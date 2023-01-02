@@ -32,6 +32,7 @@ public static class ConfigureServices
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddIdentityServer()
+            .LoadSigningCredentialFrom(configuration.GetValue<string>("certificates:signing"))
             .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
             {
                 options.Clients.AddRange(IdentityConfig.Clients);
