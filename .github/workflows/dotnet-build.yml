@@ -9,18 +9,25 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      sql:
-        image: mcr.microsoft.com/mssql/server
-        ports:
-          - 1433:1433
+      postgres:
+        image: postgres
         env:
-          SA_PASSWORD: Your_password123
-          ACCEPT_EULA: Y
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: postgres
+          POSTGRES_DB: securetary
+        options: >-
+          --health-cmd pg_isready   
+          --health-interval 10s 
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
     - name: Restore
       run: dotnet restore
     - name: Build
@@ -28,4 +35,4 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release --filter "FullyQualifiedName!~AcceptanceTests"
       env:
-        ConnectionStrings__DefaultConnection: Server=.;Database=CleanArchitectureDb-Test;User=sa;Password=Your_password123;MultipleActiveResultSets=true;Encrypt=false;
+        ConnectionStrings__DefaultConnection: Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=postgres;
