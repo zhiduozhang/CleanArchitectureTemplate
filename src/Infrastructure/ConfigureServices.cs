@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ConfigureServices
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, ConfigurationManager configuration)
     {
         services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
