@@ -48,6 +48,8 @@ jobs:
             Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=postgres;
       - name: Publish
         run: dotnet publish src/WebUI/WebUI.csproj --configuration Release --output website
+      - name: Copy AWS Deployment Manifest
+        run: cp aws-windows-deployment-manifest.json /home/runner/work/CleanArchitectureTemplate/CleanArchitectureTemplate/website/aws-windows-deployment-manifest.json
       - name: Create ZIP deployment package
         run: cd /home/runner/work/CleanArchitectureTemplate/CleanArchitectureTemplate/website/ && zip -r ~/deploy_package.zip .
       - name: Configure AWS Credentials
