@@ -3,12 +3,6 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
-Log.Logger = new LoggerConfiguration()
-  .WriteTo.Console()
-  .CreateBootstrapLogger();
-
-Log.Information("Starting up");
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -27,8 +21,11 @@ builder.Host.UseSerilog((ctx, lc) =>
         outputTemplate:
         "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
         theme: AnsiConsoleTheme.Code)
-      .Enrich.FromLogContext();
+      .Enrich.FromLogContext()
+      .ReadFrom.Configuration(builder.Configuration);
 });
+
+Log.Information("Starting up");
 
 var CorsOrigins = "_CorsOrigins";
 
