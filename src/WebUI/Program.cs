@@ -1,7 +1,10 @@
+using CleanArchitecture.Application;
+using CleanArchitecture.Infrastructure;
 using CleanArchitecture.Infrastructure.Persistence;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using WebUI;
 
 var builder = WebApplication.CreateBuilder(args);
 
