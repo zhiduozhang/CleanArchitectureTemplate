@@ -1,6 +1,8 @@
 using CleanArchitecture.Application;
 using CleanArchitecture.Infrastructure;
 using CleanArchitecture.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -98,5 +100,18 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.MapFallbackToFile("index.html");
+
+app.UseEndpoints(endpoints =>
+{
+    var pipeline = endpoints.CreateApplicationBuilder().Build();
+    var oidcAuthAttr = new AuthorizeAttribute { AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme };
+    endpoints
+        .Map("/api/{documentName}/specification.json", pipeline)
+        .RequireAuthorization(oidcAuthAttr);
+    endpoints
+        .Map("/api/index.html", pipeline)
+        .RequireAuthorization(oidcAuthAttr);
+});
+
 
 app.Run();

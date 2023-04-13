@@ -30,9 +30,9 @@ public partial class Testing
 
         _checkpoint = Respawner.CreateAsync(_configuration.GetConnectionString("DefaultConnection")!, new RespawnerOptions
         {
-            TablesToIgnore = new[] { "__EFMigrationsHistory" },
+            TablesToIgnore = new Respawn.Graph.Table[] { "__EFMigrationsHistory" },
             DbAdapter = DbAdapter.Postgres,
-        };
+        }).GetAwaiter().GetResult();
     }
 
     public static async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
@@ -108,7 +108,7 @@ public partial class Testing
         {
             await conn.OpenAsync();
 
-            await _checkpoint.Reset(conn);
+            await _checkpoint.ResetAsync(conn);
 
             _currentUserId = null;
         }

@@ -1,11 +1,10 @@
 ﻿using CleanArchitecture.Application.Common.Interfaces;
 using CleanArchitecture.Infrastructure.Persistence;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using WebUI.Filters;
 using WebUI.Services;
+using ZymLabs.NSwag.FluentValidation;
 
 namespace WebUI;
 
@@ -46,13 +45,29 @@ public static class ConfigureServices
             configure.SchemaProcessors.Add(fluentValidationSchemaProcessor);
 
             configure.Title = "CleanArchitecture API";
-            configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+            configure.AddSecurity("bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
             {
-                Type = OpenApiSecuritySchemeType.ApiKey,
-                Name = "Authorization",
-                In = OpenApiSecurityApiKeyLocation.Header,
-                Description = "Type into the textbox: Bearer {your JWT token}."
+                Type = OpenApiSecuritySchemeType.OAuth2,
+                Description = "My Authentication",
+                Flow = OpenApiOAuth2Flow.Implicit,
+                Flows = new OpenApiOAuthFlows()
+                {
+                    Implicit = new OpenApiOAuthFlow()
+                    {
+                        Scopes = new Dictionary<string, string>
+                {
+                    { "read", "Read access to protected resources" },
+                    { "write", "Write access to protected resources" }
+                },
+                        AuthorizationUrl = "https://localhost:44333/core/connect/authorize",
+                        TokenUrl = "https://localhost:44333/core/connect/token"
+                    },
+                }
             });
+
+            configure.OperationProcessors.Add(
+                new AspNetCoreOperationSecurityScopeProcessor("bearer"));
+            //      new OperationSecurityScopeProcessor("bearer"));
 
             configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
         });
